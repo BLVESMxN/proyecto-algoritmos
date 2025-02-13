@@ -1,48 +1,52 @@
 <template>
-  <div class="canvas" @click="handleCanvasClick">
+  <div class="canvas" @click="handleCanvasClick" @mousemove="dragNode" @mouseup="stopDrag">
     <svg width="800" height="500">
-      <!-- Dibujar aristas -->
+      <!-- 🔹 Dibujar aristas -->
       <g v-for="(edge, index) in graphStore.edges" :key="'edge-' + index">
         <line
           :x1="edge.start.x"
           :y1="edge.start.y"
           :x2="edge.end.x"
           :y2="edge.end.y"
-          stroke="black"
+          stroke="#555"
           stroke-width="2"
         />
         <foreignObject
-          :x="(edge.start.x + edge.end.x) / 2 - 10"
-          :y="(edge.start.y + edge.end.y) / 2 - 10"
-          width="30"
-          height="20"
+          :x="(edge.start.x + edge.end.x) / 2 - 15"
+          :y="(edge.start.y + edge.end.y) / 2 - 15"
+          width="40"
+          height="30"
         >
           <input
             type="number"
-            v-model="edge.weight"
+            v-model.number="edge.weight"
             @change="updateWeight(index, edge.weight)"
+            @click.stop
             class="weight-input"
           />
         </foreignObject>
       </g>
 
-      <!-- Dibujar nodos -->
+      <!-- 🔹 Dibujar nodos -->
       <g v-for="(node, index) in graphStore.nodes" :key="'node-' + index">
         <circle
           :cx="node.x"
           :cy="node.y"
-          r="20"
-          fill="blue"
+          r="25"
+          fill="#007bff"
           class="cursor-pointer"
+          stroke="black"
+          stroke-width="2"
           @mousedown.stop="startDrag(index, $event)"
           @click.stop="handleNodeClick(index)"
         />
         <text
           :x="node.x"
-          :y="node.y - 25"
-          font-size="14"
-          fill="black"
+          :y="node.y + 5"
+          font-size="16"
+          fill="white"
           text-anchor="middle"
+          font-weight="bold"
         >
           {{ node.name }}
         </text>
@@ -61,7 +65,7 @@ const selectedNode = ref(null);
 const draggingNode = ref(null);
 
 /**
- * Maneja el clic en el lienzo.
+ * 🔹 Maneja el clic en el lienzo.
  * Si el modo es "agregar", se crea un nuevo nodo en la posición del clic.
  */
 const handleCanvasClick = (event) => {
@@ -71,7 +75,7 @@ const handleCanvasClick = (event) => {
 };
 
 /**
- * Maneja el clic en un nodo según el modo activo.
+ * 🔹 Maneja el clic en un nodo según el modo activo.
  */
 const handleNodeClick = (index) => {
   if (props.modo === "conectar") {
@@ -82,7 +86,7 @@ const handleNodeClick = (index) => {
 };
 
 /**
- * Agrega un nuevo nodo en la posición donde el usuario hace clic.
+ * 🔹 Agrega un nuevo nodo en la posición donde el usuario hace clic.
  */
 const addNode = (event) => {
   if (event.target.tagName !== "svg") return;
@@ -95,7 +99,7 @@ const addNode = (event) => {
 };
 
 /**
- * Conecta nodos al hacer clic en ellos cuando el modo de conexión está activo.
+ * 🔹 Conecta nodos al hacer clic en ellos cuando el modo de conexión está activo.
  */
 const conectarNodos = (index) => {
   if (selectedNode.value === null) {
@@ -110,29 +114,30 @@ const conectarNodos = (index) => {
 };
 
 /**
- * Elimina un nodo y todas las aristas conectadas a él.
+ * 🔹 Elimina un nodo y todas las aristas conectadas a él.
  */
 const eliminarNodo = (index) => {
   const nodeToDelete = graphStore.nodes[index];
 
-  // Filtrar aristas que NO están conectadas al nodo que se va a eliminar
+  // 🔹 Filtrar aristas que NO están conectadas al nodo que se va a eliminar
   graphStore.edges = graphStore.edges.filter(
     (edge) => edge.start !== nodeToDelete && edge.end !== nodeToDelete
   );
 
-  // Eliminar el nodo por referencia en lugar de índice para evitar errores de reindexación
+  // 🔹 Eliminar el nodo por referencia en lugar de índice para evitar errores de reindexación
   graphStore.nodes = graphStore.nodes.filter((node) => node !== nodeToDelete);
 };
 
 /**
- * Actualiza el peso de una arista.
+ * 🔹 Actualiza el peso de una arista.
  */
 const updateWeight = (index, newWeight) => {
-  graphStore.updateEdgeWeight(index, parseInt(newWeight));
+  const weight = parseInt(newWeight) || 0;
+  graphStore.edges[index].weight = weight;
 };
 
 /**
- * Inicia el arrastre de un nodo.
+ * 🔹 Inicia el arrastre de un nodo.
  */
 const startDrag = (index, event) => {
   if (props.modo !== "agregar") {
@@ -141,7 +146,7 @@ const startDrag = (index, event) => {
 };
 
 /**
- * Maneja el movimiento de un nodo mientras se arrastra.
+ * 🔹 Maneja el movimiento de un nodo mientras se arrastra.
  */
 const dragNode = (event) => {
   if (draggingNode.value !== null) {
@@ -151,7 +156,7 @@ const dragNode = (event) => {
 };
 
 /**
- * Detiene el arrastre de un nodo.
+ * 🔹 Detiene el arrastre de un nodo.
  */
 const stopDrag = () => {
   draggingNode.value = null;
@@ -162,19 +167,21 @@ const stopDrag = () => {
 .canvas {
   width: 800px;
   height: 500px;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   position: relative;
   cursor: crosshair;
-  background-color: white; /* Fondo blanco para eliminar cualquier color extraño */
-  border-radius: 8px;
-  box-shadow: none !important;
+  background-color: white; /* 🔹 Fondo blanco para eliminar cualquier color extraño */
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 .weight-input {
-  width: 30px;
-  font-size: 12px;
+  width: 40px;
+  font-size: 14px;
   text-align: center;
   border: 1px solid #000;
   background: white;
+  border-radius: 4px;
+  font-weight: bold;
 }
 .cursor-pointer {
   cursor: grab;

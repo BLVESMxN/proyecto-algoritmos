@@ -1,14 +1,12 @@
 <template>
   <div class="container mx-auto mt-8 flex flex-col items-center">
-    <h2 class="text-2xl font-semibold text-gray-800 text-center">Editor de Grafos</h2>
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">Editor de Grafos</h2>
 
-    <!-- Contenedor del lienzo -->
-    <div class="p-4 w-full max-w-3xl mt-4 transparent-bg">
+    <div class="p-4 w-full max-w-3xl mt-4 canvas-container">
       <GraphCanvas :modo="modo" />
     </div>
 
-    <!-- Botones de acción -->
-    <div class="mt-4 flex gap-3">
+    <div class="mt-6 flex gap-4">
       <button
         class="btn"
         :class="modo === 'agregar' ? 'btn-selected' : 'btn-primary'"
@@ -46,18 +44,14 @@ const setModo = (nuevoModo) => {
 </script>
 
 <style scoped>
-/* 🔹 Hace que el fondo desaparezca sin afectar la funcionalidad */
-.transparent-bg {
+.canvas-container {
   background-color: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
 }
 
-/* 🔹 Estilos para los botones */
 .btn {
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-size: 14px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s ease-in-out;
@@ -66,7 +60,7 @@ const setModo = (nuevoModo) => {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #3498db;
   color: white;
 }
 
@@ -76,7 +70,7 @@ const setModo = (nuevoModo) => {
 }
 
 .btn-red {
-  background-color: #dc3545;
+  background-color: #e74c3c;
   color: white;
 }
 
@@ -84,5 +78,6 @@ const setModo = (nuevoModo) => {
   background-color: #ffcc00;
   color: black;
   border: 2px solid black;
+  transform: scale(1.1);
 }
 </style>
